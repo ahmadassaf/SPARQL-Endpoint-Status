@@ -25,6 +25,9 @@ app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/dumps',express.static('/usr/local/sparqles/dumps'));
 
+// set default timezon in London
+process.env.TZ = 'Europe/London';
+
 // development only
 if ('development' == app.get('env')) {
   app.use(express.errorHandler());
@@ -213,7 +216,13 @@ app.get('/endpoint', function(req, res){
 							else
 								return v;
 						});
-						console.log(docs[0].availability);
+            for(var i in docs[0].availability.data.values){
+              if(docs[0].availability.data.values[i].x == 1421625600000){
+                docs[0].availability.data.values.splice(i,1);
+                break;
+              }
+            }
+						console.log(JSON.stringify(docs[0].availability));
 						res.render('content/endpoint.jade',{
 							ep: ep,
 							nbEndpointsSearch:nbEndpointsSearch,
